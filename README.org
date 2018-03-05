@@ -1,0 +1,8 @@
+* Org Export Engine for Jekyll on Markdown
+
+This is a simple org export engine for Jekyll Markdown.
+It is built from the fabulous code provided by [[https://github.com/yoshinari-nomura/org-octopress][@yoshinari-nomura/org-octopress]].
+
+** Major Changes
+
+Unlike the original code (and indeed most org-jekyll exporters) this exporter is built on top of ~ox-md~ to generate markdown.
