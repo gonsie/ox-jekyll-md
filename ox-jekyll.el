@@ -119,6 +119,7 @@ makes:
   :translate-alist
   '((template . org-jekyll-template) ;; add YAML front matter.
     (src-block . org-jekyll-src-block)
+    (headline . org-jekyll-headline-offset)
     (inner-template . org-jekyll-inner-template)) ;; force body-only
   :options-alist
   '((:jekyll-layout "JEKYLL_LAYOUT" nil org-jekyll-layout)
@@ -126,6 +127,13 @@ makes:
     (:jekyll-tags "JEKYLL_TAGS" nil org-jekyll-tags)
     (:jekyll-published "JEKYLL_PUBLISHED" nil org-jekyll-published)
     (:jekyll-comments "JEKYLL_COMMENTS" nil org-jekyll-comments)))
+
+;;; Headline
+
+(defun org-jekyll-headline-offset (headline contents info)
+  "proper headline offset"
+  (let* ((info (plist-put info :headline-offset 0)))
+    (org-md-headline headline contents info)))
 
 
 ;;; Internal Filters
