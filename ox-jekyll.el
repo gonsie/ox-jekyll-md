@@ -22,32 +22,32 @@
 
 ;;; Commentary:
 
-;; This library implements a Jekyll-style html backend for
-;; Org exporter, based on `html' back-end.
+;; This library implements a Jekyll-style md backend for
+;; Org exporter, based on `md' back-end.
 ;;
 ;; It provides two commands for export, depending on the desired
-;; output: `org-jkl-export-as-html' (temporary buffer) and
-;; `org-jkl-export-to-html' ("html" file with YAML front matter).
+;; output: `org-jkl-export-as-md' (temporary buffer) and
+;; `org-jkl-export-to-md' ("md" file with YAML front matter).
 ;;
-;; For publishing, `org-jekyll-publish-to-html' is available.
+;; For publishing, `org-jekyll-publish-to-md' is available.
 ;; For composing, `org-jekyll-insert-export-options-template' is available.
 
 ;;; Code:
 
 ;;; Dependencies
 
-(require 'ox-html)
+(require 'ox-md)
 
 ;;; User Configurable Variables
 
 (defgroup org-export-jekyll nil
-  "Options for exporting Org mode files to jekyll HTML."
+  "Options for exporting Org mode files to jekyll MD."
   :tag "Org Jekyll"
   :group 'org-export
   :version "24.2")
 
 (defcustom org-jekyll-include-yaml-front-matter t
-  "If true, then include yaml-front-matter when exporting to html.
+  "If true, then include yaml-front-matter when exporting to md.
 
 If false, then you should include the yaml front matter like this at the top of the file:
 
@@ -111,11 +111,11 @@ makes:
 
 ;;; Define Back-End
 
-(org-export-define-derived-backend 'jekyll 'html
+(org-export-define-derived-backend 'jekyll 'md
   :menu-entry
-  '(?j "Jekyll: export to HTML with YAML front matter."
-       ((?H "As HTML buffer" org-jekyll-export-as-html)
-        (?h "As HTML file" org-jekyll-export-to-html)))
+  '(?j "Jekyll: export to MD with YAML front matter."
+       ((?M "As MD buffer" org-jekyll-export-as-md)
+        (?m "As MD file" org-jekyll-export-to-md)))
   :translate-alist
   '((template . org-jekyll-template) ;; add YAML front matter.
     (src-block . org-jekyll-src-block)
@@ -134,7 +134,7 @@ makes:
 (defun org-jekyll-src-block (src-block contents info)
   "Transcode SRC-BLOCK element into jekyll code template format
 if `org-jekyll-use-src-plugin` is t. Otherwise, perform as
-`org-html-src-block`. CONTENTS holds the contents of the item.
+`org-md-src-block`. CONTENTS holds the contents of the item.
 INFO is a plist used as a communication channel."
   (if org-jekyll-use-src-plugin
       (let ((language (org-element-property :language src-block))
@@ -142,13 +142,13 @@ INFO is a plist used as a communication channel."
                     (org-element-property :value src-block))))
         (format "{%% codeblock lang:%s %%}\n%s{%% endcodeblock %%}"
                 language value))
-    (org-export-with-backend 'html src-block contents info)))
+    (org-export-with-backend 'md src-block contents info)))
 
 
 ;;; Template
 
 (defun org-jekyll-template (contents info)
-  "Return complete document string after HTML conversion.
+  "Return complete document string after MD conversion.
 CONTENTS is the transcoded contents string. INFO is a plist
 holding export options."
   (if org-jekyll-include-yaml-front-matter
@@ -159,7 +159,7 @@ holding export options."
     ))
 
 (defun org-jekyll-inner-template (contents info)
-  "Return body of document string after HTML conversion.
+  "Return body of document string after MD conversion.
 CONTENTS is the transcoded contents string.  INFO is a plist
 holding export options."
   (concat
@@ -256,22 +256,22 @@ holding export options."
 ;;; End-User functions
 
 ;;;###autoload
-(defun org-jekyll-export-as-html
+(defun org-jekyll-export-as-md
   (&optional async subtreep visible-only body-only ext-plist)
-  "Export current buffer to a HTML buffer adding some YAML front matter."
+  "Export current buffer to a MD buffer adding some YAML front matter."
   (interactive)
   (if async
       (org-export-async-start
           (lambda (output)
-            (with-current-buffer (get-buffer-create "*Org Jekyll HTML Export*")
+            (with-current-buffer (get-buffer-create "*Org Jekyll MD Export*")
               (erase-buffer)
               (insert output)
               (goto-char (point-min))
-              (funcall org-html-display-buffer-mode)
+              (funcall org-md-display-buffer-mode)
               (org-export-add-to-stack (current-buffer) 'jekyll)))
         `(org-export-as 'jekyll ,subtreep ,visible-only ,body-only ',ext-plist))
     (let ((outbuf (org-export-to-buffer
-                   'jekyll "*Org Jekyll HTML Export*"
+                   'jekyll "*Org Jekyll MD Export*"
                    nil subtreep visible-only body-only ext-plist)))
       ;; Set major mode.
       (with-current-buffer outbuf (set-auto-mode t))
@@ -279,34 +279,34 @@ holding export options."
         (switch-to-buffer-other-window outbuf)))))
 
 ;;;###autoload
-(defun org-jekyll-export-to-html
+(defun org-jekyll-export-to-md
   (&optional async subtreep visible-only body-only ext-plist)
-  "Export current buffer to a HTML file adding some YAML front matter."
+  "Export current buffer to a MD file adding some YAML front matter."
   (interactive)
-  (let* ((extension (concat "." org-html-extension))
+  (let* ((extension (concat "." org-md-extension))
          (file (org-export-output-file-name extension subtreep))
-         (org-export-coding-system org-html-coding-system))
+         (org-export-coding-system org-md-coding-system))
     (if async
         (org-export-async-start
             (lambda (f) (org-export-add-to-stack f 'jekyll))
-          (let ((org-export-coding-system org-html-coding-system))
+          (let ((org-export-coding-system org-md-coding-system))
             `(expand-file-name
               (org-export-to-file
                'jekyll ,file nil ,subtreep ,visible-only ,body-only ',ext-plist))))
-      (let ((org-export-coding-system org-html-coding-system))
+      (let ((org-export-coding-system org-md-coding-system))
         (org-export-to-file
          'jekyll file nil subtreep visible-only body-only ext-plist)))))
 
 ;;;###autoload
-(defun org-jekyll-publish-to-html (plist filename pub-dir)
-  "Publish an org file to HTML with YAML front matter.
+(defun org-jekyll-publish-to-md (plist filename pub-dir)
+  "Publish an org file to MD with YAML front matter.
 
 FILENAME is the filename of the Org file to be published.  PLIST
 is the property list for the given project.  PUB-DIR is the
 publishing directory.
 
 Return output file name."
-  (org-publish-org-to 'jekyll filename ".html" plist pub-dir))
+  (org-publish-org-to 'jekyll filename ".md" plist pub-dir))
 
 ;;;###autoload
 (defun org-jekyll-insert-export-options-template
