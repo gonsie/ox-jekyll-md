@@ -165,7 +165,7 @@ holding export options."
   (concat
    ;; Table of contents.
    (let ((depth (plist-get info :with-toc)))
-     (when depth (org-html-toc depth info)))
+     (when depth (org-md--build-toc info (and (wholenump depth) depth))))
    ;; PREVIEW mark on the top of article.
    (unless (equal "true" (plist-get info :jekyll-published))
      "<span style=\"background: red;\">PREVIEW</span>")
