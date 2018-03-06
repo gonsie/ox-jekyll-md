@@ -103,9 +103,9 @@ org-mode's original HTML stuff. For example:
 
 makes:
 
-  {% codeblock ruby %}
+  {% highlight ruby %}
   puts \"Hello world\"
-  {% endcodeblock %}"
+  {% endhighlight %}"
   :group 'org-export-jekyll-use-src-plugin
   :type 'boolean)
 
@@ -149,7 +149,7 @@ INFO is a plist used as a communication channel."
       (let ((language (org-element-property :language src-block))
             (value (org-remove-indentation
                     (org-element-property :value src-block))))
-        (format "{%% codeblock lang:%s %%}\n%s{%% endcodeblock %%}"
+        (format "{%% highlight %s %%}\n%s{%% endhighlight %%}"
                 language value))
     (org-export-with-backend 'md src-block contents info)))
 
