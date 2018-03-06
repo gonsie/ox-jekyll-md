@@ -1,7 +1,8 @@
 ;;; ox-jekyll.el --- Export Jekyll articles using org-mode.
 
-;; Copyright (C) 2013-2017  Yoshinari Nomura
+;; Copyright (C) 2018 Elsa Gonsiorowski
 
+;; Author: Elsa Gonsiorowski <gonsie@me.com>
 ;; Author: Yoshinari Nomura <nom@quickhack.net>
 ;; Author: Justin Gordon <justin.gordon@gmail.com>
 ;; Keywords: org, jekyll
