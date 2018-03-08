@@ -181,7 +181,7 @@ holding export options."
    ;; Document contents.
    contents
    ;; Footnotes section.
-   (org-html-footnote-section info)))
+   (org-md--footnote-section info)))
 
 ;;; YAML Front Matter
 
