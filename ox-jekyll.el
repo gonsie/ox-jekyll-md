@@ -27,8 +27,8 @@
 ;; Org exporter, based on `md' back-end.
 ;;
 ;; It provides two commands for export, depending on the desired
-;; output: `org-jkl-export-as-md' (temporary buffer) and
-;; `org-jkl-export-to-md' ("md" file with YAML front matter).
+;; output: `org-jekyll-export-as-md' (temporary buffer) and
+;; `org-jekyll-export-to-md' ("md" file with YAML front matter).
 ;;
 ;; For publishing, `org-jekyll-publish-to-md' is available.
 ;; For composing, `org-jekyll-insert-export-options-template' is available.
@@ -109,14 +109,22 @@ makes:
   :group 'org-export-jekyll-use-src-plugin
   :type 'boolean)
 
+;;; my/settings
+(defcustom org-jekyll-use-todays-date t
+  "If t, org-jekyll exporter will set the filename and date yaml
+to today's date. If nil, it will try to use the #+date property
+or fallback to nothing."
+  :group 'org-export-jekyll
+  :type 'boolean)
 
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'jekyll 'md
   :menu-entry
   '(?j "Jekyll: export to Markdown with YAML front matter."
-       ((?M "As Jekyll buffer" org-jekyll-export-as-md)
-        (?m "As Jekyll file" org-jekyll-export-to-md)))
+       ((?M "As Jekyll buffer"
+            (lambda (a s v b) (org-jekyll-export-as-md a s v)))
+        (?m "As Jekyll file" (lambda (a s v b) (org-jekyll-export-to-md a s v)))))
   :translate-alist
   '((template . org-jekyll-template) ;; add YAML front matter.
     (src-block . org-jekyll-src-block)
@@ -273,8 +281,7 @@ holding export options."
     async subtreep visible-only nil nil (lambda () (text-mode))))
 
 ;;;###autoload
-(defun org-jekyll-export-to-md
-  (&optional async subtreep visible-only body-only ext-plist)
+(defun org-jekyll-export-to-md (&optional async subtreep visible-only)
   "Export current buffer to a Markdown file adding some YAML front matter."
   (interactive)
   (let ((outfile (org-export-output-file-name ".md" subtreep)))
