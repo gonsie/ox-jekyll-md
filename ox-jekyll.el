@@ -265,50 +265,23 @@ holding export options."
 ;;; End-User functions
 
 ;;;###autoload
-(defun org-jekyll-export-as-md
-  (&optional async subtreep visible-only body-only ext-plist)
-  "Export current buffer to a MD buffer adding some YAML front matter."
+(defun org-jekyll-export-as-md (&optional async subtreep visible-only)
+  "Export current buffer as a Markdown buffer adding some YAML front matter."
   (interactive)
-  (if async
-      (org-export-async-start
-          (lambda (output)
-            (with-current-buffer (get-buffer-create "*Org Jekyll MD Export*")
-              (erase-buffer)
-              (insert output)
-              (goto-char (point-min))
-              (funcall org-md-display-buffer-mode)
-              (org-export-add-to-stack (current-buffer) 'jekyll)))
-        `(org-export-as 'jekyll ,subtreep ,visible-only ,body-only ',ext-plist))
-    (let ((outbuf (org-export-to-buffer
-                   'jekyll "*Org Jekyll MD Export*"
-                   nil subtreep visible-only body-only ext-plist)))
-      ;; Set major mode.
-      (with-current-buffer outbuf (set-auto-mode t))
-      (when org-export-show-temporary-export-buffer
-        (switch-to-buffer-other-window outbuf)))))
+  (org-export-to-buffer 'jekyll "*Org Jekyll-Markdown Export*"
+    async subtreep visible-only nil nil (lambda () (text-mode))))
 
 ;;;###autoload
 (defun org-jekyll-export-to-md
   (&optional async subtreep visible-only body-only ext-plist)
-  "Export current buffer to a MD file adding some YAML front matter."
+  "Export current buffer to a Markdown file adding some YAML front matter."
   (interactive)
-  (let* ((extension (concat "." org-md-extension))
-         (file (org-export-output-file-name extension subtreep))
-         (org-export-coding-system org-md-coding-system))
-    (if async
-        (org-export-async-start
-            (lambda (f) (org-export-add-to-stack f 'jekyll))
-          (let ((org-export-coding-system org-md-coding-system))
-            `(expand-file-name
-              (org-export-to-file
-               'jekyll ,file nil ,subtreep ,visible-only ,body-only ',ext-plist))))
-      (let ((org-export-coding-system org-md-coding-system))
-        (org-export-to-file
-         'jekyll file nil subtreep visible-only body-only ext-plist)))))
+  (let ((outfile (org-export-output-file-name ".md" subtreep)))
+    (org-export-to-file 'jekyll outfile async subtreep visible-only)))
 
 ;;;###autoload
 (defun org-jekyll-publish-to-md (plist filename pub-dir)
-  "Publish an org file to MD with YAML front matter.
+  "Publish an org file to Markdown with YAML front matter.
 
 FILENAME is the filename of the Org file to be published.  PLIST
 is the property list for the given project.  PUB-DIR is the
