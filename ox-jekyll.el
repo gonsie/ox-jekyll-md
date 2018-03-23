@@ -93,9 +93,9 @@ description: Instructions on Upgrading Octopress
   :group 'org-export-jekyll
   :type 'string)
 
-(defcustom org-jekyll-use-src-plugin nil
+(defcustom org-jekyll-use-src-plugin t
    "If t, org-jekyll exporter eagerly uses plugins instead of
-org-mode's original HTML stuff. For example:
+original markdown stuff. For example:
 
    #+BEGIN_SRC ruby
      puts \"Hello world\"
@@ -114,9 +114,9 @@ makes:
 
 (org-export-define-derived-backend 'jekyll 'md
   :menu-entry
-  '(?j "Jekyll: export to MD with YAML front matter."
-       ((?M "As MD buffer" org-jekyll-export-as-md)
-        (?m "As MD file" org-jekyll-export-to-md)))
+  '(?j "Jekyll: export to Markdown with YAML front matter."
+       ((?M "As Jekyll buffer" org-jekyll-export-as-md)
+        (?m "As Jekyll file" org-jekyll-export-to-md)))
   :translate-alist
   '((template . org-jekyll-template) ;; add YAML front matter.
     (src-block . org-jekyll-src-block)
@@ -182,6 +182,7 @@ holding export options."
    contents
    ;; Footnotes section.
    (org-md--footnote-section info)))
+
 
 ;;; YAML Front Matter
 
