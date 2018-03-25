@@ -271,6 +271,11 @@ holding export options."
      (replace-regexp-in-string "^[0-9]+-[0-9]+-[0-9]+" date file)
      dir)))
 
+(defun org-jekyll-filename-date ()
+  (if org-jekyll-use-todays-date
+      (format-time-string "%Y-%m-%d")
+      (org-jekyll-date-from-property)))
+
 ;;; End-User functions
 
 ;;;###autoload
@@ -284,7 +289,7 @@ holding export options."
 (defun org-jekyll-export-to-md (&optional async subtreep visible-only)
   "Export current buffer to a Markdown file adding some YAML front matter."
   (interactive)
-  (let ((outfile (org-export-output-file-name ".md" subtreep)))
+  (let ((outfile (concat (org-jekyll-filename-date) "-" (org-export-output-file-name ".md" subtreep))))
     (org-export-to-file 'jekyll outfile async subtreep visible-only)))
 
 ;;;###autoload
