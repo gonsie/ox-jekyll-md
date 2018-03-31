@@ -57,7 +57,6 @@ If false, then you should include the yaml front matter like this at the top of 
 layout: post
 title: \"Upgrading Octopress\"
 date: 2013-09-15 22:08
-comments: true
 categories: [octopress, rubymine]
 tags: tech news
 keywords: Octopress
@@ -80,16 +79,6 @@ description: Instructions on Upgrading Octopress
 
 (defcustom org-jekyll-tags ""
   "Default space-separated tags in Jekyll article."
-  :group 'org-export-jekyll
-  :type 'string)
-
-(defcustom org-jekyll-published "true"
-  "Default publish status in Jekyll article."
-  :group 'org-export-jekyll
-  :type 'string)
-
-(defcustom org-jekyll-comments ""
-  "Default comments (disqus) flag in Jekyll article."
   :group 'org-export-jekyll
   :type 'string)
 
@@ -133,9 +122,7 @@ or fallback to nothing."
   :options-alist
   '((:jekyll-layout "JEKYLL_LAYOUT" nil org-jekyll-layout)
     (:jekyll-categories "JEKYLL_CATEGORIES" nil org-jekyll-categories)
-    (:jekyll-tags "JEKYLL_TAGS" nil org-jekyll-tags)
-    (:jekyll-published "JEKYLL_PUBLISHED" nil org-jekyll-published)
-    (:jekyll-comments "JEKYLL_COMMENTS" nil org-jekyll-comments)))
+    (:jekyll-tags "JEKYLL_TAGS" nil org-jekyll-tags)))
 
 ;;; Headline
 
@@ -183,9 +170,6 @@ holding export options."
    ;; Table of contents.
    (let ((depth (plist-get info :with-toc)))
      (when depth (org-md--build-toc info (and (wholenump depth) depth))))
-   ;; PREVIEW mark on the top of article.
-   (unless (equal "true" (plist-get info :jekyll-published))
-     "<span style=\"background: red;\">PREVIEW</span>")
    ;; Document contents.
    contents
    ;; Footnotes section.
@@ -209,24 +193,15 @@ holding export options."
          (org-jekyll--get-option info :jekyll-categories org-jekyll-categories))
         (tags
          (org-jekyll--get-option info :jekyll-tags org-jekyll-tags))
-        (published
-         (org-jekyll--get-option info :jekyll-published org-jekyll-published))
-        (comments
-         (org-jekyll--get-option info :jekyll-comments))
         (convert-to-yaml-list
          (lambda (arg)
            (mapconcat #'(lambda (text)(concat "\n- " text)) (split-string arg) " "))))
-    (unless (equal published "true")
-      (setq title (concat "[PREVIEW] " title)))
     (concat
      "---"
      "\ntitle: \""    title
-     "\"\ndate: "     date
      "\nlayout: "     layout
      "\ncategories: " (funcall convert-to-yaml-list  categories)
      "\ntags: "       (funcall convert-to-yaml-list tags)
-     "\npublished: "  published
-     "\ncomments: "   comments
      "\n---\n")))
 
 ;;; Filename and Date Helper
@@ -305,11 +280,10 @@ Return output file name."
 
 ;;;###autoload
 (defun org-jekyll-insert-export-options-template
-  (&optional title date setupfile categories tags published layout)
+  (&optional title date setupfile categories tags layout)
   "Insert a settings template for Jekyll exporter."
   (interactive)
   (let ((layout     (or layout org-jekyll-layout))
-        (published  (or published org-jekyll-published))
         (tags       (or tags org-jekyll-tags))
         (categories (or categories org-jekyll-categories)))
     (save-excursion
@@ -320,7 +294,6 @@ Return output file name."
                        "\n#+JEKYLL_LAYOUT: "     layout
                        "\n#+JEKYLL_CATEGORIES: " categories
                        "\n#+JEKYLL_TAGS: "       tags
-                       "\n#+JEKYLL_PUBLISHED: "  published
                        "\n\n* \n\n{{{more}}}"))))))
 
 ;;; provide
