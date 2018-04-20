@@ -198,9 +198,9 @@ holding export options."
            (mapconcat #'(lambda (text)(concat "\n- " text)) (split-string arg) " "))))
     (concat
      "---"
-     "\ntitle: \""    title
+     "\ntitle: \""    title "\""
      "\nlayout: "     layout
-     "\ncategories: " (funcall convert-to-yaml-list  categories)
+     "\ncategories: " (funcall convert-to-yaml-list categories)
      "\ntags: "       (funcall convert-to-yaml-list tags)
      "\n---\n")))
 
