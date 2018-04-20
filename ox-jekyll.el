@@ -111,8 +111,7 @@ or fallback to nothing."
 (org-export-define-derived-backend 'jekyll 'md
   :menu-entry
   '(?j "Jekyll: export to Markdown with YAML front matter."
-       ((?M "As Jekyll buffer"
-            (lambda (a s v b) (org-jekyll-export-as-md a s v)))
+       ((?M "As Jekyll buffer" (lambda (a s v b) (org-jekyll-export-as-md a s v)))
         (?m "As Jekyll file" (lambda (a s v b) (org-jekyll-export-to-md a s v)))))
   :translate-alist
   '((template . org-jekyll-template) ;; add YAML front matter.
@@ -125,6 +124,8 @@ or fallback to nothing."
     (:jekyll-tags "JEKYLL_TAGS" nil org-jekyll-tags)))
 
 ;;; Headline
+;;; Keep the level as defined in original content
+;;; ** subtree => ## heading
 
 (defun org-jekyll-headline-offset (headline contents info)
   "proper headline offset"
