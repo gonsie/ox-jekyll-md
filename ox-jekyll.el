@@ -98,11 +98,8 @@ makes:
   :group 'org-export-jekyll-use-src-plugin
   :type 'boolean)
 
-;;; my/settings
 (defcustom org-jekyll-use-todays-date t
-  "If t, org-jekyll exporter will set the filename and date yaml
-to today's date. If nil, it will try to use the #+date property
-or fallback to nothing."
+  "If t, org-jekyll exporter will prepend the filename with today's date."
   :group 'org-export-jekyll
   :type 'boolean)
 
@@ -122,6 +119,7 @@ or fallback to nothing."
   '((:jekyll-layout "JEKYLL_LAYOUT" nil org-jekyll-layout)
     (:jekyll-categories "JEKYLL_CATEGORIES" nil org-jekyll-categories)
     (:jekyll-tags "JEKYLL_TAGS" nil org-jekyll-tags)))
+
 
 ;;; Headline
 ;;; Keep the level as defined in original content
@@ -184,26 +182,29 @@ holding export options."
     (format "%s" (or property default ""))))
 
 (defun org-jekyll--yaml-front-matter (info)
-  (let ((title
-         (org-jekyll--get-option info :title))
-        (date
-         (org-jekyll--get-option info :date))
-        (layout
-         (org-jekyll--get-option info :jekyll-layout org-jekyll-layout))
-        (categories
-         (org-jekyll--get-option info :jekyll-categories org-jekyll-categories))
-        (tags
-         (org-jekyll--get-option info :jekyll-tags org-jekyll-tags))
-        (convert-to-yaml-list
+  (let ((convert-to-yaml-list
          (lambda (arg)
            (mapconcat #'(lambda (text)(concat "\n- " text)) (split-string arg) " "))))
-    (concat
-     "---"
-     "\ntitle: \""    title "\""
-     "\nlayout: "     layout
-     "\ncategories: " (funcall convert-to-yaml-list categories)
-     "\ntags: "       (funcall convert-to-yaml-list tags)
-     "\n---\n")))
+    (let ((title
+           (concat "\ntitle: \""    (org-jekyll--get-option info :title) "\""))
+          (layout
+           (concat "\nlayout: "     (org-jekyll--get-option info :jekyll-layout org-jekyll-layout)))
+          (categories
+           (concat "\ncategories: "
+                   (funcall convert-to-yaml-list (org-jekyll--get-option info :jekyll-categories org-jekyll-categories))))
+          (tags
+           (concat "\ntags: "
+                   (funcall convert-to-yaml-list (org-jekyll--get-option info :jekyll-tags org-jekyll-tags))))
+          (date
+           (and (plist-get info :with-date) (concat "\ndate: " (org-jekyll--get-option info :date)))))
+      (concat
+       "---"
+       title
+       date
+       layout
+       categories
+       tags
+       "\n---\n"))))
 
 ;;; Filename and Date Helper
 
@@ -221,7 +222,7 @@ holding export options."
           (org-mode)
           (setq plist (org-export-get-environment backend))
           (setq plist (plist-put plist :input-file filename)))
-      (setq plist (org-export-backend-options backend))
+      (setq plist (org-export-get-all-options backend))
       plist)))
 
 (defun org-jekyll-property (keys &optional filename)
@@ -247,10 +248,14 @@ holding export options."
      (replace-regexp-in-string "^[0-9]+-[0-9]+-[0-9]+" date file)
      dir)))
 
+(defun org-jekyll-date ()
+  (let ((date (and (plist-get info :with-date) (org-export-get-date info))))
+  (format-time-string "%Y-%m-%d" (org-parse-time-string (org-export-data date info)))))
+
 (defun org-jekyll-filename-date ()
   (if org-jekyll-use-todays-date
-      (format-time-string "%Y-%m-%d")
-      (org-jekyll-date-from-property)))
+      (format-time-string "%F-")
+    ""))
 
 ;;; End-User functions
 
@@ -265,7 +270,7 @@ holding export options."
 (defun org-jekyll-export-to-md (&optional async subtreep visible-only)
   "Export current buffer to a Markdown file adding some YAML front matter."
   (interactive)
-  (let ((outfile (concat (org-jekyll-filename-date) "-" (org-export-output-file-name ".md" subtreep))))
+  (let ((outfile (concat (org-jekyll-filename-date) (org-export-output-file-name ".md" subtreep))))
     (org-export-to-file 'jekyll outfile async subtreep visible-only)))
 
 ;;;###autoload
