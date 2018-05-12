@@ -206,56 +206,15 @@ holding export options."
        tags
        "\n---\n"))))
 
+
 ;;; Filename and Date Helper
-
-(defun org-jekyll-date-from-filename (&optional filename)
-  (let ((fn (file-name-nondirectory (or filename (buffer-file-name)))))
-    (if (string-match "^[0-9]+-[0-9]+-[0-9]+" fn)
-        (match-string 0 fn)
-      nil)))
-
-(defun org-jekyll-property-list (&optional filename)
-  (let ((backend 'jekyll) plist)
-    (if filename
-        (with-temp-buffer
-          (insert-file-contents filename)
-          (org-mode)
-          (setq plist (org-export-get-environment backend))
-          (setq plist (plist-put plist :input-file filename)))
-      (setq plist (org-export-get-all-options backend))
-      plist)))
-
-(defun org-jekyll-property (keys &optional filename)
-  (let ((plist (org-jekyll-property-list filename)))
-    (mapcar (lambda (key)
-              (let ((value (plist-get plist key)))
-                (setq value (if (listp value) (car value) value))
-                (if (stringp value)
-                    (substring-no-properties value))))
-            keys)))
-
-(defun org-jekyll-date-from-property (&optional filename)
-  (let ((plist (org-jekyll-property filename)))
-    (org-read-date
-     nil nil
-     (org-export-data-with-backend (plist-get plist :date) 'jekyll plist))))
-
-(defun org-jekyll-create-filename ()
-  (let ((date (org-jekyll-date-from-property))
-        (file (file-name-nondirectory (buffer-file-name)))
-        (dir  (file-name-directory (buffer-file-name))))
-    (expand-file-name
-     (replace-regexp-in-string "^[0-9]+-[0-9]+-[0-9]+" date file)
-     dir)))
-
-(defun org-jekyll-date ()
-  (let ((date (and (plist-get info :with-date) (org-export-get-date info))))
-  (format-time-string "%Y-%m-%d" (org-parse-time-string (org-export-data date info)))))
+;;; optionally prepend filename with today's date
 
 (defun org-jekyll-filename-date ()
   (if org-jekyll-use-todays-date
       (format-time-string "%F-")
     ""))
+
 
 ;;; End-User functions
 
