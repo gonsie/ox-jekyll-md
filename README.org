@@ -6,3 +6,8 @@ It is built from the fabulous code provided by [[https://github.com/yoshinari-no
 ** Major Changes
 
 Unlike the original code (and indeed most org-jekyll exporters) this exporter is built on top of ~ox-md~ to generate markdown.
+
+The exporting of the ~#+DATE~ property (into the YAML front matter) is controlled by the ~date:~ option.
+Today's date can be prepended to the filename with the option ~org-jekyll-use-todays-date~.
+
+More details on the development of this exporter can be found [on my blog](http://www.gonsie.com/blorg/ox-jekyll.html).
