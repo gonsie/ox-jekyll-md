@@ -10,4 +10,4 @@ Unlike the original code (and indeed most org-jekyll exporters) this exporter is
 The exporting of the ~#+DATE~ property (into the YAML front matter) is controlled by the ~date:~ option.
 Today's date can be prepended to the filename with the option ~org-jekyll-use-todays-date~.
 
-More details on the development of this exporter can be found [on my blog](http://www.gonsie.com/blorg/ox-jekyll.html).
+More details on the development of this exporter can be found [[http://www.gonsie.com/blorg/ox-jekyll.html][on my blog]].
