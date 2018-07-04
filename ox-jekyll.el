@@ -111,10 +111,10 @@ makes:
        ((?M "As Jekyll buffer" (lambda (a s v b) (org-jekyll-export-as-md a s v)))
         (?m "As Jekyll file" (lambda (a s v b) (org-jekyll-export-to-md a s v)))))
   :translate-alist
-  '((template . org-jekyll-template) ;; add YAML front matter.
+  '((headline . org-jekyll-headline-offset)
+    (inner-template . org-jekyll-inner-template) ;; force body-only
     (src-block . org-jekyll-src-block)
-    (headline . org-jekyll-headline-offset)
-    (inner-template . org-jekyll-inner-template)) ;; force body-only
+    (template . org-jekyll-template)) ;; add YAML front matter.
   :options-alist
   '((:jekyll-layout "JEKYLL_LAYOUT" nil org-jekyll-layout)
     (:jekyll-categories "JEKYLL_CATEGORIES" nil org-jekyll-categories)
