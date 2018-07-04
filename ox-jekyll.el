@@ -106,6 +106,7 @@ makes:
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'jekyll 'md
+  :filters-alist '((:filter-parse-tree . org-jekyll-separate-elements))
   :menu-entry
   '(?j "Jekyll: export to Markdown with YAML front matter."
        ((?M "As Jekyll buffer" (lambda (a s v b) (org-jekyll-export-as-md a s v)))
@@ -136,6 +137,44 @@ makes:
 
 ;;; Internal Filters
 
+(defun org-jekyll-separate-elements (tree _backend info)
+  "Fix blank lines between elements.
+
+TREE is the parse tree being exported.  BACKEND is the export
+back-end used.  INFO is a plist used as a communication channel.
+
+Enforce a blank line between elements.  There are three exceptions
+to this rule:
+
+  1. Preserve blank lines between sibling items in a plain list.
+
+  2. In an item, remove any blank line before the very first
+     paragraph and the next sub-list when the latter ends the
+     current item.
+
+  3. Do not insert blank lines between table rows.
+
+Assume BACKEND is `jekyll'."
+  (org-element-map tree (remq 'item org-element-all-elements)
+    (lambda (e)
+      (org-element-put-property
+       e :post-blank
+       (if (and (eq (org-element-type e) 'paragraph)
+		(eq (org-element-type (org-element-property :parent e)) 'item)
+		(org-export-first-sibling-p e info)
+		(let ((next (org-export-get-next-element e info)))
+		  (and (eq (org-element-type next) 'plain-list)
+		       (not (org-export-get-next-element next info)))))
+	   0
+	 (if (eq (org-element-type e) 'table-row)
+             0
+           1)))))
+  ;; Return updated tree.
+  tree)
+
+(defun org-jekyll-filter-table-row (table-row _backend info)
+  "UN-fix blank lines between table rows (inserted by ox-md)."
+  (org-element-put-property table-row :post-blank 0))
 
 (defun org-jekyll-src-block (src-block contents info)
   "Transcode SRC-BLOCK element into jekyll code template format
