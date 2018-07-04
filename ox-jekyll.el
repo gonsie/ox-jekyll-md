@@ -114,6 +114,9 @@ makes:
   '((headline . org-jekyll-headline-offset)
     (inner-template . org-jekyll-inner-template) ;; force body-only
     (src-block . org-jekyll-src-block)
+    (table . org-jekyll-table)
+    (table-cell . org-jekyll-table-cell)
+    (table-row . org-jekyll-table-row)
     (template . org-jekyll-template)) ;; add YAML front matter.
   :options-alist
   '((:jekyll-layout "JEKYLL_LAYOUT" nil org-jekyll-layout)
@@ -147,6 +150,24 @@ INFO is a plist used as a communication channel."
                 language value))
     (org-export-with-backend 'md src-block contents info)))
 
+(defun org-jekyll-table (table contents info)
+  "Empty transformation. Org tables should be valid kramdown syntax."
+  contents)
+
+(defun org-jekyll-table-cell (table-cell contents info)
+  "Empty transformation. Org tables should be valid kramdown syntax."
+  (if contents
+      (format "| %s " contents)
+    "| "))
+
+(defun org-jekyll-table-row (table-row contents info)
+  "Empty transformation. Org tables should be valid kramdown syntax."
+  (if contents
+      (format "%s|\n\n" contents)
+    (let* ((table (org-export-get-parent table-row))
+           (rc (org-export-table-dimensions table info)))
+      (concat (apply 'concat (make-list (cdr rc) "|---"))
+              (identity "|\n\n")))))
 
 ;;; Template
 
