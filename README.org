@@ -3,11 +3,19 @@
 This is a simple org export engine for Jekyll Markdown.
 It is built from the fabulous code provided by [[https://github.com/yoshinari-nomura/org-octopress][@yoshinari-nomura/org-octopress]].
 
-** Major Changes
-
 Unlike the original code (and indeed most org-jekyll exporters) this exporter is built on top of ~ox-md~ to generate markdown.
+
+** Major Changes & Features
+
+More details on the development of this exporter can be found [[http://www.gonsie.com/blorg/ox-jekyll.html][on my blog]].
+
+*** Date
 
 The exporting of the ~#+DATE~ property (into the YAML front matter) is controlled by the ~date:~ option.
 Today's date can be prepended to the filename with the option ~org-jekyll-use-todays-date~.
 
-More details on the development of this exporter can be found [[http://www.gonsie.com/blorg/ox-jekyll.html][on my blog]].
+*** Tables
+
+Table export is now implemented (rather than falling through to HTML export).
+Valid kramdown tables are created, but they do not look pretty and cell widths are not even.
+Org-table alignments are not currently implemented.

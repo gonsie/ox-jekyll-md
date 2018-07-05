@@ -172,10 +172,6 @@ Assume BACKEND is `jekyll'."
   ;; Return updated tree.
   tree)
 
-(defun org-jekyll-filter-table-row (table-row _backend info)
-  "UN-fix blank lines between table rows (inserted by ox-md)."
-  (org-element-put-property table-row :post-blank 0))
-
 (defun org-jekyll-src-block (src-block contents info)
   "Transcode SRC-BLOCK element into jekyll code template format
 if `org-jekyll-use-src-plugin` is t. Otherwise, perform as
@@ -202,11 +198,11 @@ INFO is a plist used as a communication channel."
 (defun org-jekyll-table-row (table-row contents info)
   "Empty transformation. Org tables should be valid kramdown syntax."
   (if contents
-      (format "%s|\n\n" contents)
+      (format "%s|" contents)
     (let* ((table (org-export-get-parent table-row))
            (rc (org-export-table-dimensions table info)))
       (concat (apply 'concat (make-list (cdr rc) "|---"))
-              (identity "|\n\n")))))
+              (identity "|")))))
 
 ;;; Template
 
