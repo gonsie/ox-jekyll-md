@@ -50,7 +50,8 @@
 (defcustom org-jekyll-include-yaml-front-matter t
   "If true, then include yaml-front-matter when exporting to md.
 
-If false, then you should include the yaml front matter like this at the top of the file:
+If false, then you should include the yaml front matter like this at the top of
+the file:
 
 #+BEGIN_EXPORT HTML
 ---
@@ -173,10 +174,11 @@ Assume BACKEND is `jekyll'."
   tree)
 
 (defun org-jekyll-src-block (src-block contents info)
-  "Transcode SRC-BLOCK element into jekyll code template format
-if `org-jekyll-use-src-plugin` is t. Otherwise, perform as
-`org-md-src-block`. CONTENTS holds the contents of the item.
-INFO is a plist used as a communication channel."
+  "Optionally transcode SRC-BLOCK element into jekyll code template format.
+
+Use `highlight` / `endhighlight` if `org-jekyll-use-src-plugin` is t. Otherwise,
+perform `org-md-src-block`. CONTENTS holds the contents of the item. INFO is a
+plist used as a communication channel."
   (if org-jekyll-use-src-plugin
       (let ((language (org-element-property :language src-block))
             (value (org-remove-indentation
@@ -208,6 +210,7 @@ INFO is a plist used as a communication channel."
 
 (defun org-jekyll-template (contents info)
   "Return complete document string after MD conversion.
+
 CONTENTS is the transcoded contents string. INFO is a plist
 holding export options."
   (if org-jekyll-include-yaml-front-matter
@@ -219,6 +222,7 @@ holding export options."
 
 (defun org-jekyll-inner-template (contents info)
   "Return body of document string after MD conversion.
+
 CONTENTS is the transcoded contents string.  INFO is a plist
 holding export options."
   (concat
@@ -234,25 +238,40 @@ holding export options."
 ;;; YAML Front Matter
 
 (defun org-jekyll--get-option (info property-name &optional default)
+  "Get org export options."
   (let ((property (org-export-data (plist-get info property-name) info)))
     (format "%s" (or property default ""))))
 
 (defun org-jekyll--yaml-front-matter (info)
+  "Creat YAML frontmatter content."
   (let ((convert-to-yaml-list
          (lambda (arg)
-           (mapconcat #'(lambda (text)(concat "\n- " text)) (split-string arg) " "))))
+           (mapconcat #'(lambda (text)(concat "\n- " text))
+                      (split-string arg) " "))))
     (let ((title
-           (concat "\ntitle: \""    (org-jekyll--get-option info :title) "\""))
+           (concat "\ntitle: \""
+                   (org-jekyll--get-option info
+                                           :title) "\""))
           (layout
-           (concat "\nlayout: "     (org-jekyll--get-option info :jekyll-layout org-jekyll-layout)))
+           (concat "\nlayout: "
+                   (org-jekyll--get-option info
+                                           :jekyll-layout org-jekyll-layout)))
           (categories
            (concat "\ncategories: "
-                   (funcall convert-to-yaml-list (org-jekyll--get-option info :jekyll-categories org-jekyll-categories))))
+                   (funcall convert-to-yaml-list
+                            (org-jekyll--get-option
+                             info
+                             :jekyll-categories org-jekyll-categories))))
           (tags
            (concat "\ntags: "
-                   (funcall convert-to-yaml-list (org-jekyll--get-option info :jekyll-tags org-jekyll-tags))))
+                   (funcall convert-to-yaml-list
+                            (org-jekyll--get-option
+                             info
+                             :jekyll-tags org-jekyll-tags))))
           (date
-           (and (plist-get info :with-date) (concat "\ndate: " (org-jekyll--get-option info :date)))))
+           (and (plist-get info :with-date)
+                (concat "\ndate: "
+                        (org-jekyll--get-option info :date)))))
       (concat
        "---"
        title
@@ -267,6 +286,7 @@ holding export options."
 ;;; optionally prepend filename with today's date
 
 (defun org-jekyll-filename-date ()
+  "Optionally include date in exported filename."
   (if org-jekyll-use-todays-date
       (format-time-string "%F-")
     ""))
@@ -285,7 +305,8 @@ holding export options."
 (defun org-jekyll-export-to-md (&optional async subtreep visible-only)
   "Export current buffer to a Markdown file adding some YAML front matter."
   (interactive)
-  (let ((outfile (concat (org-jekyll-filename-date) (org-export-output-file-name ".md" subtreep))))
+  (let ((outfile (concat (org-jekyll-filename-date)
+                         (org-export-output-file-name ".md" subtreep))))
     (org-export-to-file 'jekyll outfile async subtreep visible-only)))
 
 ;;;###autoload
