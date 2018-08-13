@@ -1,4 +1,4 @@
-;;; ox-jekyll.el --- Export Jekyll articles using org-mode.
+;;; ox-jekyll.el --- Export Jekyll articles using org-mode. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018 Elsa Gonsiorowski
 
