@@ -41,9 +41,9 @@
 
 ;;; User Configurable Variables
 
-(defgroup org-export-jekyll nil
+(defgroup org-export-jekyll-md nil
   "Options for exporting Org mode files to jekyll MD."
-  :tag "Org Jekyll"
+  :tag "Org Jekyll MD"
   :group 'org-export
   :version "24.2")
 
