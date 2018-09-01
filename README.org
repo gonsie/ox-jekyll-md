@@ -1,5 +1,7 @@
 * Org Export Engine for Jekyll on Markdown
 
+[[https://melpa.org/#/ox-jekyll-md][file:https://melpa.org/packages/ox-jekyll-md-badge.svg]]
+
 This is a simple org export engine for Jekyll Markdown.
 It is built from the fabulous code provided by [[https://github.com/yoshinari-nomura/org-octopress][@yoshinari-nomura/org-octopress]].
 
