@@ -279,7 +279,7 @@ holding export options."
        layout
        categories
        tags
-       "\n---\n"))))
+       "\n---\n\n"))))
 
 
 ;;; Filename and Date Helper
