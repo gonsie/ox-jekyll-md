@@ -104,6 +104,21 @@ makes:
   :group 'org-export-jekyll
   :type 'boolean)
 
+(defcustom org-export-jekyll-md-project-directory default-directory
+  "Directory to save exported articles to.
+\nDefaults to `default-directory' (i.e. current directory). See
+`org-export-jekyll-md-use-prompt-for-directory' if you
+want to choose a directory on saving."
+  :group 'org-export-jekyll
+  :type 'string)
+
+(defcustom org-export-jekyll-md-prompt-for-directory nil
+  "Non-nil means prompt for a directory to save in.
+\nStart at `org-export-jekyll-md-project-directory'. Nil means
+use `org-export-jekyll-md-project-directory' with no prompt."
+  :group 'org-export-jekyll
+  :type 'boolean)
+
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'jekyll 'md
@@ -303,10 +318,20 @@ holding export options."
 
 ;;;###autoload
 (defun org-jekyll-md-export-to-md (&optional async subtreep visible-only)
-  "Export current buffer to a Markdown file adding some YAML front matter."
+  "Export current buffer to a Markdown file adding some YAML front matter.
+\nThe file is saved to `org-export-jekyll-md-project-directory'.
+If `org-export-jekyll-md-prompt-for-directory' is non-nil, prompt
+for a directory to save to."
   (interactive)
-  (let ((outfile (concat (org-jekyll-md-filename-date)
-                         (org-export-output-file-name ".md" subtreep))))
+  (let* ((pub-dir (if org-export-jekyll-md-prompt-for-directory
+                      (read-directory-name "Save to: "
+                                           org-export-jekyll-md-project-directory
+                                           nil
+                                           t)
+                    org-export-jekyll-md-project-directory))
+         (outfile (concat pub-dir
+                          (org-jekyll-md-filename-date)
+                          (org-export-output-file-name ".md" subtreep))))
     (org-export-to-file 'jekyll outfile async subtreep visible-only)))
 
 ;;;###autoload
