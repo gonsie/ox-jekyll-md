@@ -1,11 +1,13 @@
-;;; ox-jekyll-md.el --- Export Jekyll on Markdown articles using org-mode. -*- lexical-binding: t; -*-
+;;; ox-jekyll-md.el --- Export Jekyll on Markdown articles using org-mode -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018 Elsa Gonsiorowski
 
 ;; Author: Elsa Gonsiorowski <gonsie@me.com>
 ;; Author: Yoshinari Nomura <nom@quickhack.net>
 ;; Author: Justin Gordon <justin.gordon@gmail.com>
-;; Keywords: org, jekyll
+;; Homepage: https://github.com/gonsie/ox-jekyll-md
+;; Package-Requires: ((emacs "26.1"))
+;; Keywords: org, jekyll, blog, convenience
 ;; Version: 0.1
 
 ;; This is free software; you can redistribute it and/or modify it
@@ -41,7 +43,7 @@
 
 ;;; User Configurable Variables
 
-(defgroup org-export-jekyll-md nil
+(defgroup org-jekyll-md nil
   "Options for exporting Org mode files to jekyll MD."
   :tag "Org Jekyll MD"
   :group 'org-export
@@ -64,13 +66,13 @@ keywords: Octopress
 description: Instructions on Upgrading Octopress
 ---
 #+END_EXPORT HTML"
-  :group 'org-export-jekyll
+  :group 'org-jekyll-md
   :type 'boolean)
 
 
 (defcustom org-jekyll-md-layout "post"
   "Default layout used in Jekyll article."
-  :group 'org-export-jekyll
+  :group 'org-jekyll-md
   :type 'string)
 
 (defcustom org-jekyll-md-categories ""
@@ -80,7 +82,7 @@ description: Instructions on Upgrading Octopress
 
 (defcustom org-jekyll-md-tags ""
   "Default space-separated tags in Jekyll article."
-  :group 'org-export-jekyll
+  :group 'org-jekyll-md
   :type 'string)
 
 (defcustom org-jekyll-md-use-src-plugin t
@@ -96,27 +98,28 @@ makes:
   {% highlight ruby %}
   puts \"Hello world\"
   {% endhighlight %}"
-  :group 'org-export-jekyll-use-src-plugin
+  :group 'org-jekyll-md-use-src-plugin
   :type 'boolean)
 
 (defcustom org-jekyll-md-use-todays-date t
   "If t, org-jekyll-md exporter will prepend the filename with today's date."
-  :group 'org-export-jekyll
+  :group 'org-jekyll-md
   :type 'boolean)
 
-(defcustom org-export-jekyll-md-project-directory default-directory
+(defcustom org-jekyll-md-project-directory default-directory
   "Directory to save exported articles to.
 \nDefaults to `default-directory' (i.e. current directory). See
-`org-export-jekyll-md-use-prompt-for-directory' if you
+`org-jekyll-md-use-prompt-for-directory' if you
 want to choose a directory on saving."
-  :group 'org-export-jekyll
+  :group 'org-jekyll-md
   :type 'string)
 
-(defcustom org-export-jekyll-md-prompt-for-directory nil
+(defcustom org-jekyll-md-prompt-for-directory nil
   "Non-nil means prompt for a directory to save in.
-\nStart at `org-export-jekyll-md-project-directory'. Nil means
-use `org-export-jekyll-md-project-directory' with no prompt."
-  :group 'org-export-jekyll
+\nStart at `org-jekyll-md-project-directory'. Nil means
+use `org-jekyll-md-project-directory' with no prompt."
+  :group 'org-jekyll-md
+  :type 'boolean)
   :type 'boolean)
 
 ;;; Define Back-End
@@ -191,9 +194,10 @@ Assume BACKEND is `jekyll'."
 (defun org-jekyll-md-src-block (src-block contents info)
   "Optionally transcode SRC-BLOCK element into jekyll code template format.
 
-Use `highlight` / `endhighlight` if `org-jekyll-md-use-src-plugin` is t. Otherwise,
-perform `org-md-src-block`. CONTENTS holds the contents of the item. INFO is a
-plist used as a communication channel."
+Use `highlight` / `endhighlight` if
+`org-jekyll-md-use-src-plugin' is t. Otherwise, perform
+`org-md-src-block'. CONTENTS holds the contents of the item. INFO
+is a plist used as a communication channel."
   (if org-jekyll-md-use-src-plugin
       (let ((language (org-element-property :language src-block))
             (value (org-remove-indentation
@@ -232,8 +236,7 @@ holding export options."
       (concat
        (org-jekyll-md--yaml-front-matter info)
        contents)
-    contents
-    ))
+    contents))
 
 (defun org-jekyll-md-inner-template (contents info)
   "Return body of document string after MD conversion.
@@ -319,16 +322,16 @@ holding export options."
 ;;;###autoload
 (defun org-jekyll-md-export-to-md (&optional async subtreep visible-only)
   "Export current buffer to a Markdown file adding some YAML front matter.
-\nThe file is saved to `org-export-jekyll-md-project-directory'.
-If `org-export-jekyll-md-prompt-for-directory' is non-nil, prompt
+\nThe file is saved to `org-jekyll-md-project-directory'.
+If `org-export-md-prompt-for-directory' is non-nil, prompt
 for a directory to save to."
   (interactive)
-  (let* ((pub-dir (if org-export-jekyll-md-prompt-for-directory
+  (let* ((pub-dir (if org-jekyll-md-prompt-for-directory
                       (read-directory-name "Save to: "
-                                           org-export-jekyll-md-project-directory
+                                           org-jekyll-md-project-directory
                                            nil
                                            t)
-                    org-export-jekyll-md-project-directory))
+                    org-jekyll-md-project-directory))
          (outfile (concat pub-dir
                           (org-jekyll-md-filename-date)
                           (org-export-output-file-name ".md" subtreep))))
