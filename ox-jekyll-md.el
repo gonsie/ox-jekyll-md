@@ -120,6 +120,10 @@ want to choose a directory on saving."
 use `org-jekyll-md-project-directory' with no prompt."
   :group 'org-jekyll-md
   :type 'boolean)
+
+(defcustom org-jekyll-find-file-on-export nil
+  "Non-nil means open the Markdown file after exporting."
+  :group 'org-jekyll-md
   :type 'boolean)
 
 ;;; Define Back-End
@@ -335,7 +339,9 @@ for a directory to save to."
          (outfile (concat pub-dir
                           (org-jekyll-md-filename-date)
                           (org-export-output-file-name ".md" subtreep))))
-    (org-export-to-file 'jekyll outfile async subtreep visible-only)))
+    (org-export-to-file 'jekyll outfile async subtreep visible-only)
+    (when org-jekyll-md-find-file-on-export
+      (find-file outfile))))
 
 ;;;###autoload
 (defun org-jekyll-md-publish-to-md (plist filename pub-dir)
